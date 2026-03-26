@@ -1,0 +1,164 @@
+body {
+    background: linear-gradient(90deg, rgba(255, 251, 235, 1) 0%, rgba(255, 242, 241, 1) 100%);
+    font-family: "Asap", sans-serif;
+    display: flex;
+    justify-content: center;
+    /* Центрируем по горизонтали */
+    align-items: center;
+    /* Центрируем по вертикали (как альтернатива height: 100vh у main) */
+    margin: 0;
+    /* Убираем отступы body по умолчанию */
+    min-height: 100vh;
+
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 400px;
+    width: 100%;
+
+}
+
+.mainContent {
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    background-color: white;
+    box-shadow: 15px 15px 10px #fff0e5
+}
+
+h1 {
+    color: #c14f0d;
+    text-align: center;
+
+}
+
+.imgMainCoffee {
+    background-color: #fd8b00;
+    padding: 20px;
+    border-radius: 50px;
+}
+
+p {
+    text-align: center;
+    line-height: 1.8;
+    color: black;
+    margin: 0;
+}
+
+.btn {
+    background: linear-gradient(90deg, rgba(253, 139, 0, 1) 0%, rgba(245, 75, 0, 1) 100%);
+    padding: 20px;
+    border-radius: 50px;
+    font-size: 17px;
+    color: white;
+    border: none;
+    width: 40%;
+
+}
+
+.btn:hover {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+    box-shadow: 5px 5px 30px #deccbe
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+
+}
+
+.option-btn {
+    border: 3px solid #e5e7eb;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: "Asap", sans-serif;
+}
+
+.option-btn:hover {
+    border: 3px solid #f54900;
+    transform: scale(1.05);
+    transition: transform 0.8s ease;
+    box-shadow: 0 5px 20px #deccbe
+}
+
+.choose {
+    display: none;
+}
+
+.answers {
+    display: none;
+    background-color: #fffbf9;
+    border-radius: 20px;
+}
+
+
+
+.answer {
+    list-style: none;
+    color: #b3b8c1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+}
+
+
+.result-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h2 {
+    text-align: center;
+}
+
+.answerName {
+    background-color: #fffbf9;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+}
+
+.delete-btn {
+    border-radius: 50px;
+    border: none;
+    background-color: #ffdeb6;
+    padding: 4px;
+    margin-left: 8px;
+}
+.delete-btn:hover{
+    background-color: #f54900;
+    color: white;
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+li {
+    background: linear-gradient(90deg, #fef3c7 0%, #ffedd4 100%);
+    color: #9f2d00;
+    padding: 7px;
+    border-radius: 50px;
+    font-size: 12px;
+    border: 1px solid #ffdeb6;
+
+}
+
+li:hover{
+     background: linear-gradient(90deg, #fed2c7 0%, #ffedd4 100%);
+}
