@@ -1,186 +1,190 @@
- (function() {
-            // Находим элементы
-            const btn = document.querySelector('.btn');
-            const answersBlock = document.querySelector('.answers');
-            const answersList = document.querySelector('.answer');
-            const mainText = document.querySelector('.mainText');
-            const mainQuestion = document.querySelector('.mainQuestion');
-            const img = document.querySelector('.imgMainCoffee');
-            const mainContent = document.querySelector('.mainContent');
+(function () {
 
-            let currentQuestion = 0;
-            let answers = [];
+    const btn = document.querySelector('.btn');
+    const answersBlock = document.querySelector('.answers');
+    const answersList = document.querySelector('.answer');
+    const mainText = document.querySelector('.mainText');
+    const mainQuestion = document.querySelector('.mainQuestion');
+    const img = document.querySelector('.imgMainCoffee');
+    const mainContent = document.querySelector('.mainContent');
 
-            const questions = [
-                {
-                    question: "Какой кофе вы предпочитаете?",
-                    options: ["Крепкий", "Мягкий"]
-                },
-                {
-                    question: "Добавлять молоко?",
-                    options: ["С молоком", "Без молока"]
-                },
-                {
-                    question: "Добавлять сахар?",
-                    options: ["С сахаром", "Без сахара"]
-                }
-            ];
+    let step = 0;
 
-            const coffees = {
-                "крепкий_с молоком_с сахаром": "Эспрессо с молоком и сахаром",
-                "крепкий_с молоком_без сахара": "Эспрессо с молоком без сахара",
-                "крепкий_без молока_с сахаром": "Эспрессо с сахаром",
-                "крепкий_без молока_без сахара": "Эспрессо",
-                "мягкий_с молоком_с сахаром": "Латте с сахаром",
-                "мягкий_с молоком_без сахара": "Латте",
-                "мягкий_без молока_с сахаром": "Американо с сахаром",
-                "мягкий_без молока_без сахара": "Американо"
-            };
+    let answers = {
+        beverage: null,
+        milk: null,
+        syrup: null
+    };
 
-            if (btn && answersBlock && mainText && mainQuestion && img && mainContent && answersList) {
-                btn.addEventListener('click', showQuiz);
-                btn.addEventListener('touchstart', showQuiz);
-            }
+    const steps = [
+        {
+            key: "beverage",
+            question: "Что выберешь?",
+            options: ["Кофе", "Чай"]
+        },
+        {
+            key: "milk",
+            question: "Добавить молоко?",
+            options: ["Да", "Нет"]
+        },
+        {
+            key: "syrup",
+            question: "Добавить сироп?",
+            options: ["Да", "Нет"]
+        }
+    ];
 
-            function showQuiz(e) {
-                e?.preventDefault();
-                
-                answersBlock.style.display = 'block';
-                btn.style.display = 'none';
-                mainText.style.display = 'none';
-                img.style.backgroundColor = 'white';
-                mainQuestion.textContent = 'Choose your coffee';
-                
-                answersList.innerHTML = '';
-                currentQuestion = 0;
-                answers = [];
-                showQuestion();
-            }
+    // 👉 СТАРТ
+    btn.addEventListener('click', startQuiz);
 
-            function showQuestion() {
-                const q = questions[currentQuestion];
-                
-                let html = `
-                    <div class="options-container fade-in">
-                        <h2>${q.question}</h2>
-                        <div class="options"></div>
-                    </div>
-                `;
-                
-                mainContent.innerHTML = html;
-                
-                // Создаем кнопки через JS
-                const optionsDiv = document.querySelector('.options');
-                
-                q.options.forEach((option, index) => {
-                    const button = document.createElement('button');
-                    button.className = 'option-btn';
-                    button.textContent = option;
-                    button.dataset.answer = option;
-                    button.dataset.index = index;
-                    
-                    button.addEventListener('click', function(e) {
-                        saveAnswer(e.target.dataset.answer);
-                    });
-                    
-                    optionsDiv.appendChild(button);
-                });
-            }
+    function startQuiz() {
+        answersBlock.style.display = 'block';
 
-            function saveAnswer(answer) {
-                answers.push(answer);
-                updateAnswersList(answer);
-                
-                if (currentQuestion + 1 < questions.length) {
-                    currentQuestion++;
-                    showQuestion();
-                } else {
-                    calculateResult();
-                }
-            }
+        mainText.style.display = 'none';
+        btn.style.display = 'none';
+        img.style.display = 'none';
 
-            function updateAnswersList(answer) {
-                // Если это первый ответ, очищаем список
-                if (answers.length === 1) {
-                    answersList.innerHTML = '';
-                }
-                
-                // Создаем элемент списка
-                const li = document.createElement('li');
-                
-                // Текст ответа
-                const span = document.createElement('span');
-                span.textContent = answer;
-                
-                // Кнопка удаления
-                const deleteBtn = document.createElement('button');
-                deleteBtn.textContent = '✕';
-                deleteBtn.className = 'delete-btn';
-                deleteBtn.setAttribute('aria-label', 'Удалить ответ');
-                
-                // Добавляем обработчик удаления
-                deleteBtn.addEventListener('click', function() {
-                    // Удаляем этот ответ из массива answers
-                    const answerIndex = answers.indexOf(answer);
-                    if (answerIndex !== -1) {
-                        answers.splice(answerIndex, 1);
-                    }
-                    
-                    // Удаляем элемент из DOM
-                    li.remove();
-                    
-                    // Обновляем localStorage
-                    localStorage.setItem('quizAnswers', JSON.stringify(answers));
-                    
-                    // Если удалили последний ответ, показываем первый вопрос заново
-                    if (answers.length === 0) {
-                        currentQuestion = 0;
-                        showQuestion();
-                    } else {
-                        // Иначе обновляем текущий вопрос (перезапускаем его)
-                        // Чтобы можно было выбрать другой вариант
-                        showQuestion();
-                    }
-                });
-                
-                // Собираем элемент
-                li.appendChild(span);
-                li.appendChild(deleteBtn);
-                
-                // Добавляем в начало списка (слева)
-                answersList.insertBefore(li, answersList.firstChild);
-                
-                // Сохраняем в localStorage
-                localStorage.setItem('quizAnswers', JSON.stringify(answers));
-            }
+        step = 0;
+        answers = {
+            beverage: null,
+            milk: null,
+            syrup: null
+        };
 
-            function calculateResult() {
-                // Собираем ключ из ответов
-                const key = answers.join('_').toLowerCase();
-                const result = coffees[key] || "Кофе по вашему вкусу";
-                
-                // Формируем описание
-                const milk = answers[1] === "С молоком" ? "с молоком" : "без молока";
-                const sugar = answers[2] === "С сахаром" ? "с сахаром" : "без сахара";
-                
-                mainContent.innerHTML = `
-                    <div class="result-container fade-in">
-                        <h1>Ваш кофе: <br> ${result} ☕</h1>
-                        <button class="btn restart-btn">Начать заново</button>
-                    </div>
-                `;
-                
-                // Добавляем обработчик на кнопку "Заново"
-                document.querySelector('.restart-btn').addEventListener('click', () => {
-                    localStorage.removeItem('quizAnswers');
-                    location.reload();
-                });
-            }
+        render();
+    }
 
-            // Проверяем, есть ли сохраненные ответы
-            const savedAnswers = localStorage.getItem('quizAnswers');
-            if (savedAnswers) {
-                answers = JSON.parse(savedAnswers);
-                // Можно добавить логику восстановления
-            }
-        })();
+    // 👉 ГЛАВНЫЙ РЕНДЕР (как React)
+    function render() {
+        renderQuestion();
+        renderAnswers();
+    }
+    function getAnswerLabel(key, value) {
+        if (key === "beverage") {
+            return value === "Кофе" ? "Кофе" : "Чай";
+        }
+
+        if (key === "milk") {
+            return value === "Да" ? "С молоком" : "Без молока";
+        }
+
+        if (key === "syrup") {
+            return value === "Да" ? "С сиропом" : "Без сиропа";
+        }
+
+        return value;
+    }
+
+    // 👉 ВОПРОСЫ
+    function renderQuestion() {
+        if (step >= steps.length) {
+            showResult();
+            return;
+        }
+
+        const current = steps[step];
+
+        mainContent.innerHTML = `
+            <h2>${current.question}</h2>
+            <div class="options"></div>
+        `;
+
+        const container = mainContent.querySelector('.options');
+
+        current.options.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option;
+            button.classList.add('option-btn')
+
+            button.addEventListener('click', () => {
+                handleAnswer(current.key, option);
+            });
+
+            container.appendChild(button);
+        });
+    }
+
+    // 👉 СОХРАНЕНИЕ (как setState)
+    function handleAnswer(key, value) {
+        answers[key] = value;
+        step++;
+        render();
+    }
+
+    // 👉 УДАЛЕНИЕ (ВАЖНО)
+    function deleteAnswer(key) {
+        const order = ["beverage", "milk", "syrup"];
+        const index = order.indexOf(key);
+
+        for (let i = index; i < order.length; i++) {
+            answers[order[i]] = null;
+        }
+
+        step = index;
+        render();
+    }
+
+    // 👉 СПИСОК ОТВЕТОВ
+    function renderAnswers() {
+        answersList.innerHTML = '';
+
+        let hasAnswers = false;
+
+        Object.entries(answers).forEach(([key, value]) => {
+            if (!value) return;
+
+            hasAnswers = true;
+
+            const li = document.createElement('li');
+
+            const span = document.createElement('span');
+            span.textContent = getAnswerLabel(key, value);
+
+            const del = document.createElement('button');
+            del.textContent = '✕';
+            del.classList.add('delete-btn')
+
+            del.addEventListener('click', () => {
+                deleteAnswer(key);
+            });
+
+            li.appendChild(span);
+            li.appendChild(del);
+
+            answersList.appendChild(li);
+        });
+
+        if (!hasAnswers) {
+            answersList.innerHTML = '<li>No selections yet</li>';
+        }
+    }
+
+    // 👉 РЕЗУЛЬТАТ
+    function showResult() {
+        const { beverage, milk, syrup } = answers;
+
+        let result = "Что-то вкусное ☕";
+
+        if (beverage === "Кофе") {
+            if (milk === "Нет" && syrup === "Нет") result = "Эспрессо";
+            if (milk === "Да" && syrup === "Нет") result = "Латте";
+            if (milk === "Нет" && syrup === "Да") result = "Американо с сиропом";
+        }
+
+        if (beverage === "Чай") {
+            result = "Чай 🍵";
+        }
+
+        mainContent.innerHTML = `
+            <h1>${result}</h1>
+            <button class="btn"><img src="">Заново</button>
+        `;
+
+        document.querySelector('.btn').addEventListener('click', reset);
+    }
+
+    function reset() {
+        location.reload();
+    }
+
+})();

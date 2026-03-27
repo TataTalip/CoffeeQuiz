@@ -67,16 +67,13 @@ p {
     box-shadow: 5px 5px 30px #deccbe
 }
 
-.options-container {
-    display: flex;
-    flex-direction: column;
-
-}
+ 
 
 .options {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 80%;
 
 
 }
