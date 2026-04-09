@@ -182,11 +182,11 @@
         ]
 
         if (beverage === "Кофе") {
-            if (milk === "Нет" && syrup === "Нет" && ice === "Нет") result = `Эспрессо <img src='./img/6684.jpg' class='resImg'>`;
+            if (milk === "Нет" && syrup === "Нет" && ice === "Нет") result = `Эспрессо <img src='./img/6684.webp' class='resImg'>`;
             if (milk === "Нет" && syrup === "Да" && ice === "Нет") result = `Эспрессо с сиропом `;
             if (milk === "Нет" && syrup === "Нет" && ice === "Да") result = "Эспрессо со льдом";
-            if (milk === "Да" && syrup === "Нет" && ice === "Нет") result = `Латте <img src='./img/latte.jpg' class='resImg'>`;
-            if (milk === "Да" && syrup === "Да" && ice === "Нет") result = `Латте с сиропом <img src='./img/latteSyrop.jpg' class='resImg'>`;
+            if (milk === "Да" && syrup === "Нет" && ice === "Нет") result = `Латте <img src='./img/latte.webp' class='resImg'>`;
+            if (milk === "Да" && syrup === "Да" && ice === "Нет") result = `Латте с сиропом <img src='./img/latteSyrop.webp' class='resImg'>`;
             if (milk === "Да" && syrup === "Нет" && ice === "Да") result = "Айс латте";
             if (milk === "Нет" && syrup === "Да" && ice === "Нет") result = "Американо с сиропом";
             if (milk === "Нет" && syrup === "Да" && ice === "Да") result = "Американо с сиропом и льдом";
