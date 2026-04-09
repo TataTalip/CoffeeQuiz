@@ -13,7 +13,8 @@
     let answers = {
         beverage: null,
         milk: null,
-        syrup: null
+        syrup: null,
+        ice: null
     };
 
     const steps = [
@@ -30,6 +31,11 @@
         {
             key: "syrup",
             question: "Добавить сироп?",
+            options: ["Да", "Нет"]
+        },
+        {
+            key: "ice",
+            question: "Добавить лёд?",
             options: ["Да", "Нет"]
         }
     ];
@@ -48,7 +54,8 @@
         answers = {
             beverage: null,
             milk: null,
-            syrup: null
+            syrup: null,
+            ice:null
         };
 
         render();
@@ -70,6 +77,9 @@
 
         if (key === "syrup") {
             return value === "Да" ? "С сиропом" : "Без сиропа";
+        }
+        if (key === "ice") {
+            return value === "Да" ? "Со льдом" : "Без льда";
         }
 
         return value;
@@ -113,7 +123,7 @@
 
     // 👉 УДАЛЕНИЕ (ВАЖНО)
     function deleteAnswer(key) {
-        const order = ["beverage", "milk", "syrup"];
+        const order = ["beverage", "milk", "syrup","ice"];
         const index = order.indexOf(key);
 
         for (let i = index; i < order.length; i++) {
@@ -161,14 +171,18 @@
 
     // 👉 РЕЗУЛЬТАТ
     function showResult() {
-        const { beverage, milk, syrup } = answers;
+        const { beverage, milk, syrup, ice } = answers;
 
         let result = "Что-то вкусное ☕";
 
         if (beverage === "Кофе") {
-            if (milk === "Нет" && syrup === "Нет") result = "Эспрессо";
-            if (milk === "Да" && syrup === "Нет") result = "Латте";
-            if (milk === "Нет" && syrup === "Да") result = "Американо с сиропом";
+            if (milk === "Нет" && syrup === "Нет" && ice==="Нет") result = "Эспрессо";
+            if (milk === "Нет" && syrup === "Нет" && ice==="Да") result = "Эспрессо со льдом";
+            if (milk === "Да" && syrup === "Нет" && ice==="Нет") result = "Латте";
+            if (milk === "Да" && syrup === "Да" && ice==="Нет") result = "Латте с сиропом";
+            if (milk === "Да" && syrup === "Нет" && ice==="Да") result = "Айс латте";
+            if (milk === "Нет" && syrup === "Да" && ice==="Нет") result = "Американо с сиропом";
+            if (milk === "Нет" && syrup === "Да" && ice==="Да") result = "Американо с сиропом и льдом";
         }
 
         if (beverage === "Чай") {
