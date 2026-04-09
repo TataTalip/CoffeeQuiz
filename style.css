@@ -159,3 +159,11 @@ li {
 li:hover{
      background: linear-gradient(90deg, #fed2c7 0%, #ffedd4 100%);
 }
+
+.resImg{
+    max-width: 300px;
+    border-radius: 20px;
+    box-shadow: 10px 10px 10px  #b59e8e;
+    margin-top: 10px;
+
+}
