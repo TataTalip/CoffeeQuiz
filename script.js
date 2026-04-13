@@ -176,7 +176,7 @@ function generateDrink() {
     // ☕ КОФЕ
     if (beverage === "Кофе") {
 
-        if (milk === "Без молока" || milk === null) {
+        if (!milk || milk.value === null) {
             let name = "Американо";
             let img = images.americano;
 
