@@ -4,7 +4,7 @@
             question: "Что выберешь?",
             options: [
                 { label: "Кофе", value: "Кофе" },
-                { label: "Чай", value: "обычЧайным" },
+                { label: "Чай", value: "Чай" },
                 { label: "Какао / Шоколад", value: "Какао / Шоколад" }
             ]
         },
