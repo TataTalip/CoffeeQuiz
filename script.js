@@ -234,7 +234,7 @@ function generateDrink() {
 
         if (milk.value !== "Без молока" && milk !== null) {
              name += " на " + milk.value;
-             img = images.latte;
+           
         }
         if (cream === "Да") {
             name += " со взбитыми сливками";
