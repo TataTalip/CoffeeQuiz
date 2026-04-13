@@ -1,211 +1,265 @@
-(function () {
+import { images } from './data/img.js'
+import { steps } from './data/steps.js'
 
-    const btn = document.querySelector('.btn');
-    const answersBlock = document.querySelector('.answers');
-    const answersList = document.querySelector('.answer');
-    const mainText = document.querySelector('.mainText');
-    const mainQuestion = document.querySelector('.mainQuestion');
-    const img = document.querySelector('.imgMainCoffee');
-    const mainContent = document.querySelector('.mainContent');
 
-    let step = 0;
+const btn = document.querySelector('.btn');
+const answersBlock = document.querySelector('.answers');
+const answersList = document.querySelector('.answer');
+const mainText = document.querySelector('.mainText');
+const img = document.querySelector('.imgMainCoffee');
+const mainContent = document.querySelector('.mainContent');
 
-    let answers = {
+let step = 0;
+
+let answers = {
+    beverage: null,
+    milk: null,
+    syrup: null,
+    ice: null,
+    cream: null
+};
+
+
+
+//  СТАРТ
+btn.addEventListener('click', startQuiz);
+
+function startQuiz() {
+    answersBlock.style.display = 'block';
+    mainText.style.display = 'none';
+    btn.style.display = 'none';
+    img.style.display = 'none';
+
+    step = 0;
+
+    answers = {
         beverage: null,
         milk: null,
         syrup: null,
         ice: null
     };
 
-    const steps = [
-        {
-            key: "beverage",
-            question: "Что выберешь?",
-            options: ["Кофе", "Чай"]
-        },
-        {
-            key: "milk",
-            question: "Добавить молоко?",
-            options: ["Да", "Нет"]
-        },
-        {
-            key: "syrup",
-            question: "Добавить сироп?",
-            options: ["Да", "Нет"]
-        },
-        {
-            key: "ice",
-            question: "Добавить лёд?",
-            options: ["Да", "Нет"]
-        }
-    ];
+    render();
+}
 
-    // 👉 СТАРТ
-    btn.addEventListener('click', startQuiz);
+function shouldShowStep(stepObj) {
+    if (!stepObj.condition) return true;
+    return stepObj.condition(answers);
+}
 
-    function startQuiz() {
-        answersBlock.style.display = 'block';
+//  РЕНДЕР
+function render() {
+    renderQuestion();
+    renderAnswers();
+}
 
-        mainText.style.display = 'none';
-        btn.style.display = 'none';
-        img.style.display = 'none';
+// ВОПРОС
+function renderQuestion() {
+    let current = steps[step];
 
-
-        answers = {
-            beverage: null,
-            milk: null,
-            syrup: null,
-            ice: null
-        };
-
-        render();
-    }
-
-    // 👉 ГЛАВНЫЙ РЕНДЕР (как React)
-    function render() {
-        renderQuestion();
-        renderAnswers();
-    }
-    function getAnswerLabel(key, value) {
-        if (key === "beverage") {
-            return value === "Кофе" ? "Кофе" : "Чай";
-        }
-
-        if (key === "milk") {
-            return value === "Да" ? "С молоком" : "Без молока";
-        }
-
-        if (key === "syrup") {
-            return value === "Да" ? "С сиропом" : "Без сиропа";
-        }
-        if (key === "ice") {
-            return value === "Да" ? "Со льдом" : "Без льда";
-        }
-
-        return value;
-    }
-
-    // 👉 ВОПРОСЫ
-    function renderQuestion() {
-        if (step >= steps.length) {
-            showResult();
-            return;
-        }
-
-        const current = steps[step];
-
-        mainContent.innerHTML = `
-            <h2>${current.question}</h2>
-            <div class="options"></div>
-        `;
-
-        const container = mainContent.querySelector('.options');
-
-        current.options.forEach(option => {
-            const button = document.createElement('button');
-            button.textContent = option;
-            button.classList.add('option-btn')
-
-            button.addEventListener('click', () => {
-                handleAnswer(current.key, option);
-            });
-
-            container.appendChild(button);
-        });
-    }
-
-    // 👉 СОХРАНЕНИЕ (как setState)
-    function handleAnswer(key, value) {
-        answers[key] = value;
+    while (current && !shouldShowStep(current)) {
         step++;
-        render();
+        current = steps[step];
     }
 
-    // 👉 УДАЛЕНИЕ 
-    function deleteAnswer(key) {
-        const order = ["beverage", "milk", "syrup", "ice"];
-        const index = order.indexOf(key);
-
-        for (let i = index; i < order.length; i++) {
-            answers[order[i]] = null;
-        }
-
-        step = index;
-        render();
+    if (!current) {
+        showResult();
+        return;
     }
 
-    // 👉 СПИСОК ОТВЕТОВ
-    function renderAnswers() {
-        answersList.innerHTML = '';
+    mainContent.innerHTML = `
+        <h2>${current.question}</h2>
+        <div class="options"></div>
+    `;
 
-        let hasAnswers = false;
+    const container = mainContent.querySelector('.options');
 
-        Object.entries(answers).forEach(([key, value]) => {
-            if (!value) return;
+    current.options.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option.label;
+        button.classList.add('option-btn');
 
-            hasAnswers = true;
-
-            const li = document.createElement('li');
-
-            const span = document.createElement('span');
-            span.textContent = getAnswerLabel(key, value);
-
-            const del = document.createElement('button');
-            del.textContent = '✕';
-            del.classList.add('delete-btn')
-
-            del.addEventListener('click', () => {
-                deleteAnswer(key);
-            });
-
-            li.appendChild(span);
-            li.appendChild(del);
-
-            answersList.appendChild(li);
+        button.addEventListener('click', () => {
+            // Для сиропа передаем весь объект, для остальных - значение
+            if (current.key === "syrup" || current.key === "milk") {
+                handleAnswer(current.key, option); // Передаем весь объект
+            } else {
+                handleAnswer(current.key, option.value !== undefined ? option.value : option.label);
+            }
         });
 
-        if (!hasAnswers) {
-            answersList.innerHTML = '<li>No selections yet</li>';
+        container.appendChild(button);
+    });
+}
+
+//  СОХРАНЕНИЕ
+function handleAnswer(key, value) {
+    // Для сиропа сохраняем весь объект (с label и value)
+    if (key === "syrup" || key === "milk") {
+        answers[key] = value; // value - это весь объект { label, value }
+    }
+    // Для остальных сохраняем как есть
+    else {
+        answers[key] = value;
+    }
+
+    if (key === "beverage" && value !== "Кофе") {
+        answers.syrup = null;
+    }
+
+    step++;
+    render();
+}
+
+//  УДАЛЕНИЕ
+function deleteAnswer(key) {
+    const order = ["beverage", "milk", "syrup", "ice", "cream"];
+    const index = order.indexOf(key);
+
+    for (let i = index; i < order.length; i++) {
+        answers[order[i]] = null;
+    }
+
+    step = index;
+    render();
+}
+
+//  ЛЕЙБЛЫ
+function getAnswerLabel(key, value) {
+    if (key === "milk") {
+        if (!value || value.value === null) return "Без молока";
+        return `Молоко: ${value.label}`; // Показываем "Обычное", "Овсяное" и т.д.
+    }
+    if (key === "syrup") {
+        if (!value || value.value === null) return "Без сиропа";
+        return `Сироп: ${value.label}`; // Показываем label для пользователя
+    }
+    if (key === "ice") return value === "Да" ? "Со льдом" : "Без льда";
+    if (key === "cream") return value === "Да" ? "Со сливками" : "Без сливок";
+    if (key === "beverage") return value;
+    return value;
+}
+
+//  СПИСОК
+function renderAnswers() {
+    answersList.innerHTML = '';
+
+    Object.entries(answers).forEach(([key, value]) => {
+        if (!value) return;
+
+        const stepObj = steps.find(s => s.key === key);
+        if (stepObj && !shouldShowStep(stepObj)) return;
+
+        const li = document.createElement('li');
+
+        const span = document.createElement('span');
+        span.textContent = getAnswerLabel(key, value);
+
+        const del = document.createElement('button');
+        del.textContent = '✕';
+        del.classList.add('delete-btn');
+
+        del.addEventListener('click', () => {
+            deleteAnswer(key);
+        });
+
+        li.appendChild(span);
+        li.appendChild(del);
+        answersList.appendChild(li);
+    });
+}
+
+//  ГЕНЕРАЦИЯ НАПИТКА
+function generateDrink() {
+    const { beverage, milk, syrup, ice, cream } = answers;
+
+    // ☕ КОФЕ
+    if (beverage === "Кофе") {
+
+        if (milk === "Без молока" || milk === null) {
+            let name = "Американо";
+            let img = images.americano;
+
+            if (ice === "Да") {
+                name = "Айс " + name;
+                img = images.iced_americano;
+            }
+
+            // Сироп - берем value из объекта
+            if (syrup && syrup.value !== null && syrup.value !== "Без сиропа") {
+                name += " с " + syrup.value; // Здесь будет "карамелью", "ванилью" и т.д.
+            }
+
+            return { name, img };
+        }
+
+        if (milk.value !== "Без молока" && milk !== null) {
+            let name = "Латте на " + milk.value;
+            let img = images.latte;
+
+            // лёд
+            if (ice === "Да") {
+                name = "Айс " + name;
+                img = images.iced_latte;
+            }
+
+            // сироп - берем value из объекта
+            if (syrup && syrup.value !== null && syrup.value !== "Без сиропа") {
+                name += " с " + syrup.value; // "карамелью", "ванилью", "орехом", "шоколадом"
+                img = images.latte_syrup;
+            }
+
+            // взбитые сливки
+            if (cream === "Да") {
+                name += " со взбитыми сливками";
+                img = images.iced_latte_cream || images.latte;
+            }
+
+            return { name, img };
         }
     }
 
-    // 👉 РЕЗУЛЬТАТ
-    function showResult() {
-        const { beverage, milk, syrup, ice } = answers;
+    // 🍵 ЧАЙ
+    if (beverage === "Чай") {
+        if (ice === "Да") {
+            return { name: "Чай со льдом", img: images.iced_tea };
+        }
+        return { name: "Чай", img: images.tea };
+    }
 
-        let result = "Что-то вкусное ☕";
-        const imgs = [
-            {
-                name: 'aspresso',
-                img: '1.jpg'
-            }
-        ]
+    // 🍫 КАКАО / ШОКОЛАД
+    if (beverage === "Какао / Шоколад") {
+        let name = "Горячий шоколад";
+        let img = images.hot_choc;
 
-        if (beverage === "Кофе") {
-            if (milk === "Нет" && syrup === "Нет" && ice === "Нет") result = `Эспрессо <img src='./img/6684.webp' class='resImg'>`;
-            if (milk === "Нет" && syrup === "Да" && ice === "Нет") result = `Эспрессо с сиропом `;
-            if (milk === "Нет" && syrup === "Нет" && ice === "Да") result = "Эспрессо со льдом";
-            if (milk === "Да" && syrup === "Нет" && ice === "Нет") result = `Латте <img src='./img/latte.webp' class='resImg'>`;
-            if (milk === "Да" && syrup === "Да" && ice === "Нет") result = `Латте с сиропом <img src='./img/latteSyrop.webp' class='resImg'>`;
-            if (milk === "Да" && syrup === "Нет" && ice === "Да") result = "Айс латте";
-            if (milk === "Нет" && syrup === "Да" && ice === "Нет") result = "Американо с сиропом";
-            if (milk === "Нет" && syrup === "Да" && ice === "Да") result = "Американо с сиропом и льдом";
+        if (milk.value !== "Без молока" && milk !== null) {
+             name += " на " + milk.value;
+             img = images.latte;
+        }
+        if (cream === "Да") {
+            name += " со взбитыми сливками";
+            img = images.hot_choc_cream
         }
 
-        if (beverage === "Чай") {
-            result = "Чай 🍵";
-        }
+        return { name, img };
+    }
 
-        mainContent.innerHTML = `
-            <h1>${result}</h1>
-            <button class="btn"><img src="">Заново</button>
+    return { name: "Что-то вкусное ☕", img: images.espresso };
+}
+
+// 👉 РЕЗУЛЬТАТ
+function showResult() {
+    const drink = generateDrink();
+
+    mainContent.innerHTML = `
+            <h1>${drink.name}</h1>
+            <img src="${drink.img}" class="resImg">
+            <button class="btn">Заново</button>
         `;
 
-        document.querySelector('.btn').addEventListener('click', reset);
-    }
+    document.querySelector('.btn').addEventListener('click', reset);
+}
 
-    function reset() {
-        location.reload();
-    }
-
-})();
+function reset() {
+    location.reload();
+}
