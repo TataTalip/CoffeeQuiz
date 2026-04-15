@@ -50,6 +50,11 @@
                 },
 
             ],
-            condition: (answers) => answers.beverage !== "Чай"
+            condition: (answers) => {
+                  if (answers.beverage === "Кофе" || answers.beverage === "Чай") {
+                return answers.milk && answers.milk.value !== null;
+            }
+            return false;
+            }
         }
     ];

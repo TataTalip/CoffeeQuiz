@@ -178,16 +178,18 @@ function generateDrink() {
 
         if (!milk || milk.value === null) {
             let name = "Американо";
-            let img = images.americano;
+            let img = images.espresso;
 
-            if (ice === "Да") {
-                name = "Айс " + name;
-                img = images.iced_americano;
-            }
+          
 
             // Сироп - берем value из объекта
             if (syrup && syrup.value !== null && syrup.value !== "Без сиропа") {
                 name += " с " + syrup.value; // Здесь будет "карамелью", "ванилью" и т.д.
+                img = images.espresso;
+            }
+              if (ice === "Да") {
+                name = "Айс " + name;
+                img = images.americano_ice;
             }
 
             return { name, img };
@@ -206,13 +208,13 @@ function generateDrink() {
             // сироп - берем value из объекта
             if (syrup && syrup.value !== null && syrup.value !== "Без сиропа") {
                 name += " с " + syrup.value; // "карамелью", "ванилью", "орехом", "шоколадом"
-                img = images.latte_syrup;
+                img = images.iced_latte_syrop;
             }
 
             // взбитые сливки
             if (cream === "Да") {
                 name += " со взбитыми сливками";
-                img = images.iced_latte_cream || images.latte;
+                img = images.iced_latte_cream;
             }
 
             return { name, img };
@@ -221,20 +223,40 @@ function generateDrink() {
 
     // 🍵 ЧАЙ
     if (beverage === "Чай") {
+        let name = "Чай";
+        let img = images.tea_hot;
+
+        // Лед
         if (ice === "Да") {
-            return { name: "Чай со льдом", img: images.iced_tea };
+            name = "Чай со льдом";
+            img = images.iced_tea;
         }
-        return { name: "Чай", img: images.tea };
+
+        // Молоко (если выбрано и не "Без молока")
+        if (milk && milk.value !== null) {
+            // Если уже есть "со льдом", добавляем "с молоком"
+            if (name.includes("со льдом")) {
+                name += ` на ${milk.value}`;
+                img = images.tea_milk_ice
+
+
+            } else {
+                name += ` на ${milk.value}`;
+                img=images.tea_milk
+            }
+        }
+
+        return { name, img };
     }
 
     // 🍫 КАКАО / ШОКОЛАД
     if (beverage === "Какао / Шоколад") {
-        let name = "Горячий шоколад";
+        let name = "Горячий шоколад / какао";
         let img = images.hot_choc;
 
         if (milk.value !== "Без молока" && milk !== null) {
-             name += " на " + milk.value;
-           
+            name += " на " + milk.value;
+
         }
         if (cream === "Да") {
             name += " со взбитыми сливками";
