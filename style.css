@@ -59,6 +59,17 @@ p {
     border: none;
     width: 40%;
 
+   /* Убираем стандартный highlight */
+    -webkit-tap-highlight-color: transparent;
+    
+    /* Плавный переход */
+    transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+/* Эффект при нажатии (на телефоне) */
+.btn:active {
+    transform: scale(0.97);
+    opacity: 0.9;
 }
 
 .btn:hover {
