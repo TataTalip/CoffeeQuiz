@@ -1,3 +1,4 @@
+// data/steps.js
 export const steps = [
     {
         key: "beverage",
@@ -13,10 +14,10 @@ export const steps = [
         question: "Add milk?",
         options: [
             { label: "No milk", value: null },
-            { label: "Regular", value: "regular" },
-            { label: "Oat", value: "oat" },
-            { label: "Almond", value: "almond" },
-            { label: "Coconut", value: "coconut" }
+            { label: "Regular", value: "regular milk" },
+            { label: "Oat", value: "oat milk" },
+            { label: "Almond", value: "almond milk" },
+            { label: "Coconut", value: "coconut milk" }
         ]
     },
     {
@@ -36,7 +37,7 @@ export const steps = [
         question: "Add ice?",
         options: [
             { label: "Yes", value: "Yes" },
-            { label: "No", value: "No" },
+            { label: "No", value: "No" }
         ],
         condition: (answers) => answers.beverage !== "Cocoa / Chocolate"
     },
@@ -45,12 +46,24 @@ export const steps = [
         question: "Add whipped cream?",
         options: [
             { label: "Yes", value: "Yes" },
-            { label: "No", value: "No" },
+            { label: "No", value: "No" }
         ],
-        condition: (answers) => {
-            if (answers.beverage === "Coffee" || answers.beverage === "Tea") {
+       condition: (answers) => {
+            // Сливки ТОЛЬКО для:
+            // 1. Кофе с молоком
+            // 2. Какао/Шоколад (всегда, даже без молока)
+            
+            // Для кофе - только если есть молоко
+            if (answers.beverage === "Coffee") {
                 return answers.milk && answers.milk.value !== null;
             }
+            
+            // Для какао/шоколада - всегда показываем сливки
+            if (answers.beverage === "Cocoa / Chocolate") {
+                return true;
+            }
+            
+            // Для чая - никогда не показываем сливки
             return false;
         }
     }
