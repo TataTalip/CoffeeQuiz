@@ -1,7 +1,6 @@
 import { images } from './data/img.js'
 import { steps } from './data/steps.js'
 
-
 const btn = document.querySelector('.btn');
 const answersBlock = document.querySelector('.answers');
 const answersList = document.querySelector('.answer');
@@ -19,9 +18,7 @@ let answers = {
     cream: null
 };
 
-
-
-//  СТАРТ
+// START
 btn.addEventListener('click', startQuiz);
 
 function startQuiz() {
@@ -36,7 +33,8 @@ function startQuiz() {
         beverage: null,
         milk: null,
         syrup: null,
-        ice: null
+        ice: null,
+        cream: null
     };
 
     render();
@@ -47,13 +45,13 @@ function shouldShowStep(stepObj) {
     return stepObj.condition(answers);
 }
 
-//  РЕНДЕР
+// RENDER
 function render() {
     renderQuestion();
     renderAnswers();
 }
 
-// ВОПРОС
+// QUESTION
 function renderQuestion() {
     let current = steps[step];
 
@@ -80,9 +78,9 @@ function renderQuestion() {
         button.classList.add('option-btn');
 
         button.addEventListener('click', () => {
-            // Для сиропа передаем весь объект, для остальных - значение
+            // For syrup and milk, pass the entire object
             if (current.key === "syrup" || current.key === "milk") {
-                handleAnswer(current.key, option); // Передаем весь объект
+                handleAnswer(current.key, option); // Pass entire object
             } else {
                 handleAnswer(current.key, option.value !== undefined ? option.value : option.label);
             }
@@ -92,18 +90,18 @@ function renderQuestion() {
     });
 }
 
-//  СОХРАНЕНИЕ
+// SAVE ANSWER
 function handleAnswer(key, value) {
-    // Для сиропа сохраняем весь объект (с label и value)
+    // For syrup and milk, save entire object (with label and value)
     if (key === "syrup" || key === "milk") {
-        answers[key] = value; // value - это весь объект { label, value }
+        answers[key] = value; // value is the entire object { label, value }
     }
-    // Для остальных сохраняем как есть
+    // For others, save as is
     else {
         answers[key] = value;
     }
 
-    if (key === "beverage" && value !== "Кофе") {
+    if (key === "beverage" && value !== "Coffee") {
         answers.syrup = null;
     }
 
@@ -111,7 +109,7 @@ function handleAnswer(key, value) {
     render();
 }
 
-//  УДАЛЕНИЕ
+// DELETE ANSWER
 function deleteAnswer(key) {
     const order = ["beverage", "milk", "syrup", "ice", "cream"];
     const index = order.indexOf(key);
@@ -124,23 +122,23 @@ function deleteAnswer(key) {
     render();
 }
 
-//  ЛЕЙБЛЫ
+// LABELS
 function getAnswerLabel(key, value) {
     if (key === "milk") {
-        if (!value || value.value === null) return "Без молока";
-        return `Молоко: ${value.label}`; // Показываем "Обычное", "Овсяное" и т.д.
+        if (!value || value.value === null) return "No milk";
+        return `Milk: ${value.label}`;
     }
     if (key === "syrup") {
-        if (!value || value.value === null) return "Без сиропа";
-        return `Сироп: ${value.label}`; // Показываем label для пользователя
+        if (!value || value.value === null) return "No syrup";
+        return `Syrup: ${value.label}`;
     }
-    if (key === "ice") return value === "Да" ? "Со льдом" : "Без льда";
-    if (key === "cream") return value === "Да" ? "Со сливками" : "Без сливок";
+    if (key === "ice") return value === "Yes" ? "With ice" : "No ice";
+    if (key === "cream") return value === "Yes" ? "With whipped cream" : "No whipped cream";
     if (key === "beverage") return value;
     return value;
 }
 
-//  СПИСОК
+// RENDER ANSWERS LIST
 function renderAnswers() {
     answersList.innerHTML = '';
 
@@ -169,51 +167,49 @@ function renderAnswers() {
     });
 }
 
-//  ГЕНЕРАЦИЯ НАПИТКА
+// DRINK GENERATION
 function generateDrink() {
     const { beverage, milk, syrup, ice, cream } = answers;
 
-    // ☕ КОФЕ
-    if (beverage === "Кофе") {
+    // ☕ COFFEE
+    if (beverage === "Coffee") {
 
         if (!milk || milk.value === null) {
-            let name = "Американо";
+            let name = "Americano";
             let img = images.espresso;
 
-          
-
-            // Сироп - берем value из объекта
-            if (syrup && syrup.value !== null && syrup.value !== "Без сиропа") {
-                name += " с " + syrup.value; // Здесь будет "карамелью", "ванилью" и т.д.
+            // Syrup - take value from object
+            if (syrup && syrup.value !== null && syrup.value !== "No syrup") {
+                name += " with " + syrup.value;
                 img = images.espresso;
             }
-              if (ice === "Да") {
-                name = "Айс " + name;
+            if (ice === "Yes") {
+                name = "Iced " + name;
                 img = images.americano_ice;
             }
 
             return { name, img };
         }
 
-        if (milk.value !== "Без молока" && milk !== null) {
-            let name = "Латте на " + milk.value;
+        if (milk && milk.value !== null) {
+            let name = "Latte with " + milk.value;
             let img = images.latte;
 
-            // лёд
-            if (ice === "Да") {
-                name = "Айс " + name;
+            // Ice
+            if (ice === "Yes") {
+                name = "Iced " + name;
                 img = images.iced_latte;
             }
 
-            // сироп - берем value из объекта
-            if (syrup && syrup.value !== null && syrup.value !== "Без сиропа") {
-                name += " с " + syrup.value; // "карамелью", "ванилью", "орехом", "шоколадом"
-                img = images.iced_latte_syrop;
+            // Syrup - take value from object
+            if (syrup && syrup.value !== null && syrup.value !== "No syrup") {
+                name += " with " + syrup.value;
+                img = images.iced_latte_syrup;
             }
 
-            // взбитые сливки
-            if (cream === "Да") {
-                name += " со взбитыми сливками";
+            // Whipped cream
+            if (cream === "Yes") {
+                name += " with whipped cream";
                 img = images.iced_latte_cream;
             }
 
@@ -221,63 +217,60 @@ function generateDrink() {
         }
     }
 
-    // 🍵 ЧАЙ
-    if (beverage === "Чай") {
-        let name = "Чай";
+    // 🍵 TEA
+    if (beverage === "Tea") {
+        let name = "Tea";
         let img = images.tea_hot;
 
-        // Лед
-        if (ice === "Да") {
-            name = "Чай со льдом";
+        // Ice
+        if (ice === "Yes") {
+            name = "Iced tea";
             img = images.iced_tea;
         }
 
-        // Молоко (если выбрано и не "Без молока")
+        // Milk (if selected and not "No milk")
         if (milk && milk.value !== null) {
-            // Если уже есть "со льдом", добавляем "с молоком"
-            if (name.includes("со льдом")) {
-                name += ` на ${milk.value}`;
-                img = images.tea_milk_ice
-
-
+            // If already has "iced", add "with milk"
+            if (name.includes("Iced")) {
+                name += ` with ${milk.value}`;
+                img = images.tea_milk_ice;
             } else {
-                name += ` на ${milk.value}`;
-                img=images.tea_milk
+                name += ` with ${milk.value}`;
+                img = images.tea_milk;
             }
         }
 
         return { name, img };
     }
 
-    // 🍫 КАКАО / ШОКОЛАД
-    if (beverage === "Какао / Шоколад") {
-        let name = "Горячий шоколад / какао";
+    // 🍫 COCOA / CHOCOLATE
+    if (beverage === "Cocoa / Chocolate") {
+        let name = "Hot chocolate / cocoa";
         let img = images.hot_choc;
 
-        if (milk.value !== "Без молока" && milk !== null) {
-            name += " на " + milk.value;
-
+        if (milk && milk.value !== null) {
+            name += " with " + milk.value;
         }
-        if (cream === "Да") {
-            name += " со взбитыми сливками";
-            img = images.hot_choc_cream
+        if (cream === "Yes") {
+            name += " with whipped cream";
+            img = images.hot_choc_cream;
         }
 
         return { name, img };
     }
 
-    return { name: "Что-то вкусное ☕", img: images.espresso };
+    return { name: "Something tasty ☕", img: images.espresso };
 }
 
-// 👉 РЕЗУЛЬТАТ
+// 👉 RESULT
 function showResult() {
     const drink = generateDrink();
 
     mainContent.innerHTML = `
-            <h1>${drink.name}</h1>
-            <img src="${drink.img}" class="resImg">
-            <button class="btn">Заново</button>
-        `;
+        <h1>${drink.name}</h1>
+        <img src="${drink.img}" class="resImg">
+        <button class="btn">Start over</button>
+    `;
 
     document.querySelector('.btn').addEventListener('click', reset);
 }
